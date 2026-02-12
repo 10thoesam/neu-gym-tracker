@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEU Gym Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app">
+        <header>
+            <h1>Marino Gym Tracker</h1>
+            <p class="subtitle">Northeastern University — Live Occupancy</p>
+            <span class="last-updated" id="last-updated">—</span>
+        </header>
+
+        <!-- Big current count display -->
+        <section class="hero" id="hero">
+            <p>Loading...</p>
+        </section>
+
+        <!-- Today's line chart -->
+        <section class="card">
+            <h2>Today's Trend</h2>
+            <div class="chart-wrapper">
+                <canvas id="todayChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Weekly heatmap -->
+        <section class="card">
+            <h2>Best Times to Go</h2>
+            <div id="heatmap"></div>
+        </section>
+
+        <!-- Stats -->
+        <section class="card">
+            <h2>Stats</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <span class="stat-value" id="stat-readings">—</span>
+                    <span class="stat-label">Total Readings</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="stat-avg">—</span>
+                    <span class="stat-label">Avg Count</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="stat-peak">—</span>
+                    <span class="stat-label">Peak</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="stat-low">—</span>
+                    <span class="stat-label">Lowest</span>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built by Tenzin Thoesam Shrestha · NEU Khoury College</p>
+        </footer>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
