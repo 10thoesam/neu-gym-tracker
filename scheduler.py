@@ -5,11 +5,16 @@ from scraper import get_gym_count
 from models import db, GymReading
 from notifier import send_alert
 from apscheduler.schedulers.background import BackgroundScheduler
+from datetime import datetime, timezone
 
 THRESHOLDS = {
     '3rd Floor Weight Room': 35,
     '1st Floor Weight Room': 15,
 }
+
+last_alert = {}
+COOLDOWN_MINUTES = 60
+
 def save_reading(app):
     with app.app_context():
         data = get_gym_count()
@@ -28,7 +33,12 @@ def save_reading(app):
             for reading in data:
                 for keyword, threshold in THRESHOLDS.items():
                     if keyword in reading['name'] and reading['count'] < threshold:
-                        send_alert(reading['name'], reading['count'])
+                        now = datetime.now(timezone.utc)
+                        last_time = last_alert.get(keyword)
+                        if last_time is None or (now - last_time).total_seconds() > COOLDOWN_MINUTES * 60:
+                            print(f"Triggering alert: {reading['name']} at {reading['count']}")
+                            send_alert(reading['name'], reading['count'])
+                            last_alert[keyword] = now
 
 def start_scheduler(app):
     scheduler = BackgroundScheduler()
