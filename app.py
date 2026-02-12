@@ -47,8 +47,8 @@ def history():
     ).order_by(GymReading.timestamp).all()
     return jsonify([r.to_dict() for r in readings])
 
-@app.route('/api/average')
-def average():
+@app.route('/api/averages')
+def averages():
     readings = GymReading.query.all()
     data = {}
     for r in readings:
