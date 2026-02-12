@@ -49,7 +49,12 @@ def history():
 
 @app.route('/api/averages')
 def averages():
-    readings = GymReading.query.all()
+    location = request.args.get('location', None)
+    if location:
+        readings = GymReading.query.filter(GymReading.location.contains(location)).all()
+    else:
+        readings = GymReading.query.all()
+    
     data = {}
     for r in readings:
         day = str(r.day_of_week)

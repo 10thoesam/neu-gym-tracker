@@ -113,10 +113,18 @@ async function loadTodayChart() {
 
 // Heatmap
 async function loadHeatmap() {
+    await buildHeatmap('3rd Floor Weight Room', 'heatmap-3rd');
+    await buildHeatmap('1st Floor Weight Room', 'heatmap-1st');
+}
+
+async function buildHeatmap(location, elementId) {
     try {
-        const res = await fetch('/api/averages');
+        const res = await fetch('/api/averages?location=' + encodeURIComponent(location));
         const averages = await res.json();
-        if (Object.keys(averages).length === 0) return;
+        if (Object.keys(averages).length === 0) {
+            document.getElementById(elementId).innerHTML = '<p style="color:#71717a;text-align:center;padding:20px;">Collecting data... check back in a few days</p>';
+            return;
+        }
 
         let maxVal = 0;
         for (const day in averages) {
@@ -125,31 +133,43 @@ async function loadHeatmap() {
             }
         }
 
+        const displayHours = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22];
+
         let html = '<table><tr><th></th>';
-        HOURS.forEach(h => {
-            const label = h > 12 ? (h - 12) + 'p' : h + 'a';
+        displayHours.forEach(h => {
+            let label;
+            if (h === 12) label = '12p';
+            else if (h > 12) label = (h - 12) + 'p';
+            else label = h + 'a';
             html += '<th>' + label + '</th>';
         });
         html += '</tr>';
 
         DAYS.forEach((day, i) => {
-            html += '<tr><td style="text-align:right;padding-right:8px;font-weight:600;color:#71717a">' + day + '</td>';
-            HOURS.forEach(hour => {
+            html += '<tr><td class="day-label">' + day + '</td>';
+            displayHours.forEach(hour => {
                 const val = averages[i]?.[hour] || 0;
                 const intensity = maxVal > 0 ? val / maxVal : 0;
-                const r = Math.round(30 + intensity * 170);
-                const g = Math.round(80 - intensity * 60);
-                const b = Math.round(80 - intensity * 40);
-                const a = 0.3 + intensity * 0.7;
-                const color = 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
-                const textColor = intensity > 0.5 ? '#fff' : '#a1a1aa';
-                html += '<td style="background:' + color + ';color:' + textColor + '">' + Math.round(val) + '</td>';
+
+                let bg, textColor;
+                if (val === 0) {
+                    bg = 'rgba(255,255,255,0.03)';
+                    textColor = '#3f3f46';
+                } else {
+                    const hue = 120 - (intensity * 120);
+                    bg = 'hsla(' + hue + ', 70%, 40%, ' + (0.3 + intensity * 0.7) + ')';
+                    textColor = intensity > 0.4 ? '#fff' : '#a1a1aa';
+                }
+
+                html += '<td style="background:' + bg + ';color:' + textColor + '">';
+                html += val > 0 ? Math.round(val) : '-';
+                html += '</td>';
             });
             html += '</tr>';
         });
         html += '</table>';
 
-        document.getElementById('heatmap').innerHTML = html;
+        document.getElementById(elementId).innerHTML = html;
     } catch (err) {
         console.error('Failed to load heatmap:', err);
     }
