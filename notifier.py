@@ -7,6 +7,7 @@ GMAIL_APP_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD', '')
 NOTIFY_TO = os.environ.get('NOTIFY_TO', '')
 
 def send_alert(location, count):
+    print(f"Email config - FROM: {GMAIL_ADDRESS}, TO: {NOTIFY_TO}, PASSWORD length: {len(GMAIL_APP_PASSWORD)}")
     subject = f"🏋️ Gym Alert: {location} is empty!"
     body = f"{location} currently has only {count} people. Great time to go!"
 
