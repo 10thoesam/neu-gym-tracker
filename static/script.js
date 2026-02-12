@@ -14,6 +14,23 @@ document.addEventListener('DOMContentLoaded', () => {
 // Current count
 async function loadCurrent() {
     try {
+        const now = new Date();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const gymClosed = hour === 0 || (hour < 5) || (hour === 5 && minute < 30);
+
+        if (gymClosed) {
+            document.getElementById('hero').innerHTML = `
+                <div class="location">
+                    <h3>Marino Center</h3>
+                    <span class="count-number">Closed</span>
+                    <span class="count-label">Opens at 5:30 AM</span>
+                </div>
+            `;
+            document.getElementById('last-updated').textContent = '';
+            return;
+        }
+
         const res = await fetch('/api/current');
         if (!res.ok) return;
         const data = await res.json();
