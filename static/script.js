@@ -21,8 +21,11 @@ async function loadCurrent() {
         let html = '';
         data.forEach(d => {
             let level, statusText;
-            if (d.count < 30) { level = 'low'; statusText = 'Not Busy'; }
-            else if (d.count < 60) { level = 'medium'; statusText = 'Moderate'; }
+            let capacity = d.location.includes('1st Floor') ? 32 : 65;
+            let percent = d.count / capacity;
+
+            if (percent < 0.5) { level = 'low'; statusText = 'Not Busy'; }
+            else if (percent < 0.8) { level = 'medium'; statusText = 'Moderate'; }
             else { level = 'high'; statusText = 'Busy'; }
 
             html += `

@@ -3,9 +3,13 @@ The scheduler runs your scraper automatically every N minutes in the background
 """
 from scraper import get_gym_count
 from models import db, GymReading
+from notifier import send_alert
 from apscheduler.schedulers.background import BackgroundScheduler
 
-
+THRESHOLDS = {
+    '3rd Floor Weight Room': 35,
+    '1st Floor Weight Room': 15,
+}
 def save_reading(app):
     with app.app_context():
         data = get_gym_count()
@@ -20,6 +24,11 @@ def save_reading(app):
                 )
                 db.session.add(entry)
             db.session.commit()
+
+            for reading in data:
+                for keyword, threshold in THRESHOLDS.items():
+                    if keyword in reading['name'] and reading['count'] < threshold:
+                        send_alert(reading['name'], reading['count'])
 
 def start_scheduler(app):
     scheduler = BackgroundScheduler()
