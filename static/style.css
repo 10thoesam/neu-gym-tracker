@@ -358,6 +358,29 @@ footer {
     font-family: 'JetBrains Mono', monospace;
 }
 
+/* Discord button */
+.discord-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: #5865F2;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 16px rgba(88, 101, 242, 0.4);
+    transition: all 0.2s ease;
+    z-index: 100;
+}
+
+.discord-fab:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(88, 101, 242, 0.5);
+}
+
 @media (max-width: 600px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
