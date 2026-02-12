@@ -30,7 +30,7 @@ def current_count():
         return jsonify(results)
     return jsonify({'error': 'No data yet'}), 404
 
-@app.route('/api.today')
+@app.route('/api/today')
 def today_readings():
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     readings = GymReading.query.filter(
@@ -56,8 +56,8 @@ def average():
         hour = str(r.hour)
         if day not in data:
             data[day] = {}
-        if hour not in data:
-            data[day][hour] = {}
+        if hour not in data[day]:
+            data[day][hour] = []
         data[day][hour].append(r.count)
 
     result = {}
