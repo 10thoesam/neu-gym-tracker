@@ -45,9 +45,11 @@ async function loadCurrent() {
             else if (percent < 0.8) { level = 'medium'; statusText = 'Moderate'; }
             else { level = 'high'; statusText = 'Busy'; }
 
+            const shortName = d.location.includes('3rd Floor') ? '3rd Floor Weight Room' : '1st Floor Weight Room';
+
             html += `
                 <div class="location">
-                    <h3>${d.location}</h3>
+                    <h3>${shortName}</h3>
                     <span class="count-number">${d.count}</span>
                     <span class="count-label">people</span>
                     <div class="status-badge ${level}">${statusText}</div>
@@ -57,8 +59,8 @@ async function loadCurrent() {
         document.getElementById('hero').innerHTML = html;
 
         const ts = new Date(data[0].timestamp);
-        document.getElementById('last-updated').textContent =
-            'Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('last-updated').innerHTML =
+            '<span class="live-dot"></span>Updated ' + ts.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } catch (err) {
         console.error('Failed to load current:', err);
     }
@@ -71,11 +73,13 @@ async function loadTodayChart() {
         const data = await res.json();
         if (!data.length) return;
 
-        const labels = data.map(d => {
+        const floor3 = data.filter(d => d.location.includes('3rd Floor'));
+        const floor1 = data.filter(d => d.location.includes('1st Floor'));
+
+        const labels = floor3.map(d => {
             const t = new Date(d.timestamp);
             return t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         });
-        const counts = data.map(d => d.count);
 
         const ctx = document.getElementById('todayChart').getContext('2d');
         if (todayChart) todayChart.destroy();
@@ -84,25 +88,50 @@ async function loadTodayChart() {
             type: 'line',
             data: {
                 labels,
-                datasets: [{
-                    label: 'Occupancy',
-                    data: counts,
-                    borderColor: '#c8102e',
-                    borderWidth: 2,
-                    tension: 0.3,
-                    fill: true,
-                    backgroundColor: 'rgba(200, 16, 46, 0.1)',
-                    pointRadius: 3,
-                    pointBackgroundColor: '#c8102e',
-                }]
+                datasets: [
+                    {
+                        label: '1st Floor',
+                        data: floor1.map(d => d.count),
+                        borderColor: '#eab308',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                        pointRadius: 2,
+                        pointBackgroundColor: '#eab308',
+                    },
+                    {
+                        label: '3rd Floor',
+                        data: floor3.map(d => d.count),
+                        borderColor: '#c8102e',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true,
+                        backgroundColor: 'rgba(200, 16, 46, 0.1)',
+                        pointRadius: 2,
+                        pointBackgroundColor: '#c8102e',
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: { color: '#71717a', font: { family: 'DM Sans' } }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { beginAtZero: true }
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#71717a', maxTicksLimit: 12 }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#71717a' },
+                        grid: { color: 'rgba(255,255,255,0.05)' }
+                    }
                 }
             }
         });
@@ -186,5 +215,35 @@ async function loadStats() {
         document.getElementById('stat-low').textContent = data.min_count || '—';
     } catch (err) {
         console.error('Failed to load stats:', err);
+    }
+}
+
+// Prediction
+async function fetchPrediction() {
+    const day = document.getElementById('predict-day').value;
+    const hour = document.getElementById('predict-hour').value;
+    const resultEl = document.getElementById('predict-result');
+
+    resultEl.textContent = 'Predicting...';
+
+    try {
+        const res = await fetch(`/api/predict?day=${day}&hour=${hour}`);
+        const data = await res.json();
+
+        if (res.ok) {
+            let level, color;
+            if (data.predicted_count < 30) { level = 'Not Busy'; color = '#22c55e'; }
+            else if (data.predicted_count < 60) { level = 'Moderate'; color = '#eab308'; }
+            else { level = 'Busy'; color = '#c8102e'; }
+
+            resultEl.innerHTML = `
+                <span style="color:${color}">${Math.round(data.predicted_count)} people</span>
+                <span style="color:#71717a;font-size:13px;font-weight:400;margin-left:8px">${level} · based on ${data.based_on_readings} readings</span>
+            `;
+        } else {
+            resultEl.innerHTML = '<span style="color:#71717a">Not enough data yet — check back after a few days</span>';
+        }
+    } catch (err) {
+        resultEl.innerHTML = '<span style="color:#71717a">Failed to load prediction</span>';
     }
 }

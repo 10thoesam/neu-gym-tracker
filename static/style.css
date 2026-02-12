@@ -193,6 +193,171 @@ footer {
     margin-bottom: 8px;
 }
 
+/* Live pulse dot */
+.live-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: pulse 2s ease-in-out infinite;
+    vertical-align: middle;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+
+    50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+    }
+}
+
+/* Card glow and shadows */
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    border-color: rgba(200, 16, 46, 0.3);
+    box-shadow: 0 4px 32px rgba(200, 16, 46, 0.08);
+}
+
+/* Hero glow */
+.hero {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(200, 16, 46, 0.04) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Location cards inside hero */
+.location {
+    display: inline-block;
+    text-align: center;
+    padding: 20px 40px;
+    position: relative;
+}
+
+.location h3 {
+    font-size: 14px;
+    color: var(--dim);
+    margin-bottom: 8px;
+}
+
+/* Prediction section */
+.predict-section {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.predict-select {
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.predict-select:hover {
+    border-color: var(--red);
+}
+
+.predict-btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.predict-btn:hover {
+    background: #a00d24;
+    box-shadow: 0 0 16px rgba(200, 16, 46, 0.3);
+}
+
+.predict-result {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 16px;
+    min-height: 28px;
+}
+
+/* Smoother heatmap */
+.heatmap-container td {
+    text-align: center;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 10px 2px;
+    border-radius: 6px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.heatmap-container td:hover {
+    transform: scale(1.15);
+    z-index: 1;
+    box-shadow: 0 0 12px rgba(200, 16, 46, 0.2);
+}
+
+/* Stats glow on numbers */
+.stat-value {
+    display: block;
+    font-size: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--text), var(--red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Last updated with live dot */
+.last-updated {
+    font-size: 12px;
+    color: var(--dim);
+    font-family: 'JetBrains Mono', monospace;
+}
+
 @media (max-width: 600px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);

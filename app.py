@@ -20,7 +20,7 @@ def dashboard():
 
 @app.route('/api/current')
 def current_count():
-    locations = ['Marino Center - 3rd Floor Weight Room', 'Marino Center- 1st Floor Weight Room']
+    locations = ['Marino Center- 1st Floor Weight Room', 'Marino Center - 3rd Floor Weight Room']
     results = []
     for loc in locations:
         latest = GymReading.query.filter_by(location=loc).order_by(GymReading.timestamp.desc()).first()
