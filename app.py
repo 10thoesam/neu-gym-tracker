@@ -3,6 +3,8 @@ from models import db, GymReading
 from scheduler import start_scheduler
 from datetime import datetime, timedelta, timezone
 
+EST = timezone(timedelta(hours=-5))
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///gym.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -32,7 +34,7 @@ def current_count():
 
 @app.route('/api/today')
 def today_readings():
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now(EST).replace(hour=0, minute=0, second=0, microsecond=0)
     readings = GymReading.query.filter(
         GymReading.timestamp >= today_start
     ).order_by(GymReading.timestamp).all()
@@ -41,7 +43,7 @@ def today_readings():
 @app.route('/api/history')
 def history():
     days = request.args.get('days', 7, type=int)
-    since = datetime.now(timezone.utc) - timedelta(days=days)
+    since = datetime.now(EST) - timedelta(days=days)
     readings = GymReading.query.filter(
         GymReading.timestamp >= since
     ).order_by(GymReading.timestamp).all()
